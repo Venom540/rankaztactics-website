@@ -1,0 +1,261 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+// Get unique categories
+const categories = ['All', ...new Set(posts.map((p) => p.data.category))];
+---
+
+<BaseLayout
+  title="Blog — Amazon Ranking & Growth Insights"
+  description="Actionable Amazon FBA strategies, PPC tips, listing optimization guides, and profitability insights from the Rankaztactics team."
+>
+  <section class="blog-page section" aria-label="Blog">
+    <div class="container">
+      <!-- Header -->
+      <div class="blog-page__header">
+        <div class="section-tag">Amazon Insights</div>
+        <h1 class="blog-page__title">
+          The Rankaztactics <span class="text-gradient">Blog</span>
+        </h1>
+        <p class="blog-page__sub">
+          Actionable strategies, deep dives, and real case studies to help Amazon sellers rank higher and profit more. Updated regularly by our expert team.
+        </p>
+      </div>
+
+      <!-- Category Filter -->
+      <div class="blog-page__filters" role="navigation" aria-label="Blog categories">
+        {categories.map((cat) => (
+          <button
+            class={`filter-btn ${cat === 'All' ? 'active' : ''}`}
+            data-category={cat}
+            aria-pressed={cat === 'All' ? 'true' : 'false'}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      <!-- Post Count -->
+      <p class="blog-page__count" id="post-count">
+        Showing <strong>{posts.length}</strong> {posts.length === 1 ? 'article' : 'articles'}
+      </p>
+
+      <!-- Grid -->
+      <div class="grid-3" id="blog-grid" role="list">
+        {posts.map((post) => (
+          <div role="listitem" data-category={post.data.category}>
+            <BlogCard
+              title={post.data.title}
+              description={post.data.description}
+              pubDate={post.data.pubDate}
+              author={post.data.author}
+              category={post.data.category}
+              slug={post.slug}
+              readTime={post.data.readTime}
+            />
+          </div>
+        ))}
+      </div>
+
+      <!-- Empty State -->
+      <div class="blog-page__empty" id="blog-empty" style="display: none;" aria-live="polite">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <p>No articles found in this category.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Banner -->
+  <section class="blog-cta section-sm" aria-label="Book a strategy call">
+    <div class="container">
+      <div class="blog-cta__inner">
+        <div class="blog-cta__orb" aria-hidden="true"></div>
+        <div class="blog-cta__text">
+          <h2>Put These Strategies to Work <span class="text-gradient">For Your Brand</span></h2>
+          <p>Our team has helped 100+ Amazon sellers implement exactly what you're reading. Let's build your ranking roadmap.</p>
+        </div>
+        <a href="/#calendly" class="btn-primary" id="blog-cta-book-btn">
+          <span>Book a Free Strategy Call</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .blog-page {
+    padding-top: 120px;
+  }
+
+  .blog-page__header {
+    text-align: center;
+    margin-bottom: 48px;
+    max-width: 680px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .blog-page__title {
+    margin-bottom: 16px;
+  }
+
+  .blog-page__sub {
+    font-size: 1rem;
+    line-height: 1.75;
+    color: var(--text-secondary);
+  }
+
+  /* Filters */
+  .blog-page__filters {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 32px;
+  }
+
+  .filter-btn {
+    padding: 8px 20px;
+    border-radius: 999px;
+    border: 1px solid var(--border-card);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .filter-btn:hover {
+    border-color: var(--accent-border);
+    color: var(--accent-primary);
+    background: var(--accent-dim);
+  }
+
+  .filter-btn.active {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    background: var(--accent-dim);
+  }
+
+  /* Count */
+  .blog-page__count {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 36px;
+  }
+
+  .blog-page__count strong {
+    color: var(--text-primary);
+  }
+
+  /* Empty */
+  .blog-page__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  /* CTA Banner */
+  .blog-cta {
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .blog-cta__inner {
+    position: relative;
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-xl);
+    padding: clamp(40px, 6vw, 60px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    overflow: hidden;
+    flex-wrap: wrap;
+  }
+
+  .blog-cta__orb {
+    position: absolute;
+    top: -80px;
+    right: -80px;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .blog-cta__text {
+    flex: 1;
+    min-width: 240px;
+  }
+
+  .blog-cta__text h2 {
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    margin-bottom: 12px;
+  }
+
+  .blog-cta__text p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin: 0;
+    max-width: 500px;
+  }
+</style>
+
+<script>
+  // Client-side category filter
+  const filterBtns = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+  const blogGrid = document.getElementById('blog-grid')!;
+  const postCount = document.getElementById('post-count')!;
+  const emptyState = document.getElementById('blog-empty')!;
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const category = btn.dataset.category!;
+
+      // Update active state
+      filterBtns.forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-pressed', 'false');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-pressed', 'true');
+
+      // Filter cards
+      const items = blogGrid.querySelectorAll<HTMLElement>('[data-category]');
+      let visible = 0;
+
+      items.forEach(item => {
+        const match = category === 'All' || item.dataset.category === category;
+        item.style.display = match ? '' : 'none';
+        if (match) visible++;
+      });
+
+      // Update count
+      postCount.innerHTML = `Showing <strong>${visible}</strong> ${visible === 1 ? 'article' : 'articles'}`;
+
+      // Toggle empty state
+      emptyState.style.display = visible === 0 ? 'flex' : 'none';
+      blogGrid.style.display = visible === 0 ? 'none' : '';
+    });
+  });
+</script>

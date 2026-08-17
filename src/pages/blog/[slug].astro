@@ -1,0 +1,319 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+type Props = { post: CollectionEntry<'blog'> };
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+const {
+  title,
+  description,
+  pubDate,
+  author,
+  category,
+  readTime = '5 min read',
+} = post.data;
+
+const formattedDate = pubDate.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+>
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <div class="container breadcrumb__inner">
+      <a href="/" class="breadcrumb__link">Home</a>
+      <span class="breadcrumb__sep" aria-hidden="true">›</span>
+      <a href="/blog" class="breadcrumb__link">Blog</a>
+      <span class="breadcrumb__sep" aria-hidden="true">›</span>
+      <span class="breadcrumb__current" aria-current="page">{title}</span>
+    </div>
+  </nav>
+
+  <article class="post-page section" aria-label={`Blog post: ${title}`}>
+    <div class="container">
+      <!-- Post Header -->
+      <header class="post-header">
+        <div class="post-header__meta">
+          <span class="blog-card__category" style="display: inline-flex; align-items: center;">
+            {category}
+          </span>
+          <span class="post-header__read-time">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+            {readTime}
+          </span>
+        </div>
+
+        <h1 class="post-header__title">{title}</h1>
+        <p class="post-header__description">{description}</p>
+
+        <div class="post-header__author">
+          <div class="blog-card__avatar post-author-avatar" aria-hidden="true">
+            {author.charAt(0)}
+          </div>
+          <div>
+            <p class="post-header__author-name">{author}</p>
+            <time class="post-header__date" datetime={pubDate.toISOString()}>
+              Published {formattedDate}
+            </time>
+          </div>
+        </div>
+      </header>
+
+      <!-- Divider -->
+      <div class="divider" style="margin: 40px 0;"></div>
+
+      <!-- Post Content -->
+      <div class="post-content prose">
+        <Content />
+      </div>
+
+      <!-- Post Footer -->
+      <footer class="post-footer">
+        <div class="divider" style="margin: 48px 0 36px;"></div>
+        <div class="post-footer__inner">
+          <div class="post-footer__author-card">
+            <div class="blog-card__avatar post-author-avatar post-author-avatar--lg" aria-hidden="true">
+              {author.charAt(0)}
+            </div>
+            <div>
+              <p class="post-footer__written-by">Written by</p>
+              <p class="post-footer__author-name">{author}</p>
+              <p class="post-footer__author-bio">
+                Amazon growth strategist at Rankaztactics helping brands dominate their categories.
+              </p>
+            </div>
+          </div>
+
+          <div class="post-footer__cta">
+            <p>Ready to implement these strategies?</p>
+            <a href="/#calendly" class="btn-primary" id="post-cta-btn">
+              <span>Book a Free Strategy Call</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </footer>
+
+      <!-- Back Link -->
+      <div class="post-back">
+        <a href="/blog" class="btn-secondary" id="post-back-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          Back to All Posts
+        </a>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  /* Breadcrumb */
+  .breadcrumb {
+    padding-top: 96px;
+    padding-bottom: 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .breadcrumb__inner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .breadcrumb__link {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    transition: var(--transition);
+  }
+
+  .breadcrumb__link:hover {
+    color: var(--accent-primary);
+  }
+
+  .breadcrumb__sep {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+  }
+
+  .breadcrumb__current {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Post Page */
+  .post-page {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .post-page .container {
+    max-width: 800px;
+  }
+
+  /* Post Header */
+  .post-header {
+    padding-top: 20px;
+  }
+
+  .post-header__meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .post-header__read-time {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .post-header__title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    line-height: 1.15;
+    margin-bottom: 20px;
+  }
+
+  .post-header__description {
+    font-size: 1.1rem;
+    line-height: 1.75;
+    color: var(--text-secondary);
+    margin-bottom: 32px;
+  }
+
+  .post-header__author {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .post-header__author-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .post-header__date {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    display: block;
+  }
+
+  /* Author Avatar override */
+  .post-author-avatar {
+    width: 44px;
+    height: 44px;
+    font-size: 1rem;
+  }
+
+  .post-author-avatar--lg {
+    width: 56px;
+    height: 56px;
+    font-size: 1.2rem;
+  }
+
+  /* Post Footer */
+  .post-footer__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  .post-footer__author-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+    min-width: 240px;
+  }
+
+  .post-footer__written-by {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin: 0 0 2px;
+  }
+
+  .post-footer__author-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 4px;
+  }
+
+  .post-footer__author-bio {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0;
+    max-width: 280px;
+  }
+
+  .post-footer__cta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .post-footer__cta > p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  /* Back Link */
+  .post-back {
+    margin-top: 48px;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .post-footer__inner {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .post-footer__cta {
+      align-items: flex-start;
+    }
+  }
+</style>

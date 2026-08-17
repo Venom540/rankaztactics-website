@@ -1,0 +1,237 @@
+---
+const navLinks = [
+  { label: 'Home', href: '/' },
+  { label: 'Blog', href: '/blog' },
+  { label: 'Contact', href: '/#contact' },
+];
+---
+
+<header class="navbar">
+  <div class="container navbar__inner">
+    <!-- Logo -->
+    <a href="/" class="navbar__logo" aria-label="Rankaztactics Home">
+      <img src="/rankaztactics-logo.png" alt="Rankaztactics" class="logo-img" />
+    </a>
+
+    <!-- Desktop Nav -->
+    <nav class="navbar__nav" aria-label="Main navigation">
+      <ul class="navbar__links">
+        {navLinks.map((link) => (
+          <li>
+            <a href={link.href} class="navbar__link">{link.label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <!-- CTA -->
+    <a href="/#calendly" class="navbar__cta btn-primary" id="nav-cta-btn">
+      <span>Book a Call</span>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </a>
+
+    <!-- Hamburger -->
+    <button class="navbar__hamburger" id="hamburger-btn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobile-menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="navbar__mobile" id="mobile-menu" aria-hidden="true">
+    <nav aria-label="Mobile navigation">
+      <ul class="navbar__mobile-links">
+        {navLinks.map((link) => (
+          <li>
+            <a href={link.href} class="navbar__mobile-link">{link.label}</a>
+          </li>
+        ))}
+        <li>
+          <a href="/#calendly" class="btn-primary" style="justify-content: center;">
+            <span>Book a Free Strategy Call</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    transition: background 0.3s ease, border-color 0.3s ease;
+    border-bottom: 1px solid transparent;
+  }
+
+  .navbar.scrolled {
+    background: rgba(8, 8, 15, 0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom-color: var(--border-subtle);
+  }
+
+  .navbar__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: var(--navbar-h); /* synced with global --navbar-h token */
+    gap: 32px;
+  }
+
+  /* Logo */
+  .navbar__logo {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .logo-img {
+    height: 42px;   /* desktop — width scales automatically from the 3.14:1 ratio */
+    width: auto;
+    display: block;
+  }
+
+  /* Desktop Nav */
+  .navbar__links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .navbar__link {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    border-radius: 999px;
+    transition: var(--transition);
+  }
+
+  .navbar__link:hover {
+    color: var(--text-primary);
+    background: var(--border-subtle);
+  }
+
+  /* CTA */
+  .navbar__cta {
+    flex-shrink: 0;
+    padding: 10px 22px;
+    font-size: 0.875rem;
+  }
+
+  /* Hamburger */
+  .navbar__hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+  }
+
+  .navbar__hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: var(--text-primary);
+    border-radius: 2px;
+    transition: var(--transition);
+  }
+
+  .navbar__hamburger.open span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .navbar__hamburger.open span:nth-child(2) {
+    opacity: 0;
+  }
+  .navbar__hamburger.open span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* Mobile Menu — hidden by default via max-height + padding collapsing to zero */
+  .navbar__mobile {
+    display: none;                      /* off on desktop */
+    background: rgba(8, 8, 15, 0.98);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border-subtle);
+    overflow: hidden;
+    max-height: 0;
+    padding: 0 24px;                    /* zero vertical padding when closed */
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                padding    0.3s ease;
+  }
+
+  .navbar__mobile.open {
+    max-height: 400px;
+    padding: 24px;                      /* vertical padding only appears when open */
+  }
+
+  .navbar__mobile-links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .navbar__mobile-link {
+    display: block;
+    padding: 14px 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    border-radius: var(--radius-md);
+    transition: var(--transition);
+  }
+
+  .navbar__mobile-link:hover {
+    color: var(--text-primary);
+    background: var(--border-subtle);
+  }
+
+  @media (max-width: 800px) {
+    .navbar__nav { display: none; }
+    .navbar__cta { display: none; }
+    .navbar__hamburger { display: flex; }
+    .navbar__mobile { display: block; }  /* enabled on mobile; still collapsed until .open */
+
+    /* Slightly smaller logo on mobile */
+    .logo-img {
+      height: 34px;
+    }
+  }
+</style>
+
+<script>
+  // Scroll effect
+  const navbar = document.querySelector('.navbar') as HTMLElement;
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 20);
+  }, { passive: true });
+
+  // Hamburger toggle
+  const hamburger = document.getElementById('hamburger-btn') as HTMLButtonElement;
+  const mobileMenu = document.getElementById('mobile-menu') as HTMLElement;
+
+  hamburger.addEventListener('click', () => {
+    const isOpen = hamburger.classList.toggle('open');
+    mobileMenu.classList.toggle('open', isOpen);
+    hamburger.setAttribute('aria-expanded', String(isOpen));
+    mobileMenu.setAttribute('aria-hidden', String(!isOpen));
+  });
+
+  // Close mobile menu on link click
+  document.querySelectorAll('.navbar__mobile-link, .navbar__mobile a').forEach(link => {
+    link.addEventListener('click', () => {
+      hamburger.classList.remove('open');
+      mobileMenu.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', 'false');
+      mobileMenu.setAttribute('aria-hidden', 'true');
+    });
+  });
+</script>
