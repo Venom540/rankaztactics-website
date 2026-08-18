@@ -2,6 +2,10 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BlogCard from '../components/BlogCard.astro';
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
+import zayeemPhoto from '../assets/team/zayeem.jpg';
+import areebaPhoto from '../assets/team/areeba.png';
+import iqraPhoto from '../assets/team/iqra.jpg';
 
 // Fetch latest 3 blog posts (non-draft, sorted by date)
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
@@ -175,7 +179,16 @@ const services = [
         <!-- Zayeem Afzal -->
         <div class="team-card card">
           <div class="team-card__photo-wrap">
-            <img src="/team/zayeem.jpg" alt="Zayeem Afzal" class="team-card__photo" loading="lazy" />
+            <Image
+              src={zayeemPhoto}
+              alt="Zayeem Afzal — CEO at Rankaztactics"
+              class="team-card__photo"
+              width={600}
+              height={750}
+              format="webp"
+              quality={82}
+              loading="lazy"
+            />
           </div>
           <div class="team-card__body">
             <h3 class="team-card__name">Zayeem Afzal</h3>
@@ -187,7 +200,16 @@ const services = [
         <!-- Areeba -->
         <div class="team-card card">
           <div class="team-card__photo-wrap">
-            <img src="/team/areeba.png" alt="Areeba" class="team-card__photo" loading="lazy" />
+            <Image
+              src={areebaPhoto}
+              alt="Areeba — Client Management at Rankaztactics"
+              class="team-card__photo"
+              width={600}
+              height={750}
+              format="webp"
+              quality={82}
+              loading="lazy"
+            />
           </div>
           <div class="team-card__body">
             <h3 class="team-card__name">Areeba</h3>
@@ -198,7 +220,16 @@ const services = [
         <!-- Iqra Bashir -->
         <div class="team-card card">
           <div class="team-card__photo-wrap">
-            <img src="/team/iqra.jpg" alt="Iqra Bashir" class="team-card__photo" loading="lazy" />
+            <Image
+              src={iqraPhoto}
+              alt="Iqra Bashir — CFO at Rankaztactics"
+              class="team-card__photo"
+              width={600}
+              height={750}
+              format="webp"
+              quality={82}
+              loading="lazy"
+            />
           </div>
           <div class="team-card__body">
             <h3 class="team-card__name">Iqra Bashir</h3>
@@ -637,6 +668,20 @@ const services = [
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 28px;
+  }
+
+  @media (max-width: 900px) {
+    .team__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 580px) {
+    .team__grid {
+      grid-template-columns: 1fr;
+      max-width: 380px;
+      margin-inline: auto;
+    }
   }
 
   .team-card {
